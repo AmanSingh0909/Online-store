@@ -17,9 +17,19 @@ const authMiddleware = (req, res, next) => {
                 message: 'Token missing'
             })
         }
+
+        const decoded = jwt.verify(token, 'secret')
+
+        req.user = { 
+            userId: decoded.userId
+        }
+
+        next()
     } catch (error) {
         return res.status(401).json({
             message: 'Invalid or expired token'
         })
     }
 }
+
+module.exports = authMiddleware
