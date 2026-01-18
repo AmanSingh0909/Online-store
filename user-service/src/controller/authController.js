@@ -96,4 +96,21 @@ const refreshToken = async (req, res) =>{
     }
 }
 
-module.exports = { register, login, refreshToken }
+const logout = async (req, res) => {
+    try {
+        const { token } = req.body
+
+        await User.updateOne(
+            { refreshToken: token },
+            { $set: { refreshToken: null }}
+        )
+
+        return res.json({
+            message: "Logged out successfully"
+        })
+    } catch (error) {
+        message: "Logout failed"
+    }
+}
+
+module.exports = { register, login, refreshToken, logout }
