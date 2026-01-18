@@ -53,4 +53,47 @@ const login = async (req, res) => {
     }
 }
 
-module.exports = { register, login }
+const refreshToken = async (req, res) =>{
+    try {
+        const { token } = req.body
+
+        if(!token) {
+            return res.status(401).json({
+                message: "Refresh token missing"
+            })
+        }
+
+        const user = await User.findOne({ refreshToken: token})
+        if(!user){
+            return res.status(403).json({ message: "Invalid refresh token"})
+        }
+
+        const decoded = jwt.verify(token,  'Secret')
+
+        const newAccessToken = jwt.sign(
+            { id: decoded.id, role: user.role},
+            'secret',
+            { expiresIn: '15m'}
+        )
+
+        const newRefreshToken = jwt.sign(
+            { id: decoded.id },
+            'Secret',
+            { expiresIn: '7d'}
+        )
+
+        user.refreshToken = newRefreshToken
+        await user.save()
+
+        res.json({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken
+        })
+    } catch (error) {
+        res.status(403).json({
+            message: "Invalid refresh token"
+        })
+    }
+}
+
+module.exports = { register, login, refreshToken }
