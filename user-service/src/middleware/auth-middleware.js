@@ -9,7 +9,6 @@ const authMiddleware = (req, res, next) => {
                 message: 'Authorization header missing'
             })
         }
-
         const token = authHeader.split(' ')[1]
 
         if (!token) {
@@ -17,7 +16,6 @@ const authMiddleware = (req, res, next) => {
                 message: 'Token missing'
             })
         }
-
         const decoded = jwt.verify(token, 'secret')
 
         req.user = { 
