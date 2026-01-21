@@ -7,7 +7,6 @@ const createOrder = async (req, res) => {
             userId: req.body.userId,
             amount: req.body.amount
         }
-
         await sendOrderEvent(order)
 
         res.status(201).json({
